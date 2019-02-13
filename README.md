@@ -1,16 +1,28 @@
 # Pillow 5.2.0 reads the jpeg image differently between two devices
 
-This repo demos a Pillow bug that I recently noticed. Briefly speaking, I found the jpeg image is loaded differently between my two devices. To demo the difference, you may need a device with x86_64 CPU and another device with aarch64 CPU. 
+This repo demos a Pillow bug that I recently noticed. Briefly speaking, I found the jpeg image is loaded differently between my two devices. To demo the difference, you may need a device with an x86_64 CPU and another device with an aarch64 CPU. 
 
 Pillow version: 5.2.0  
 Platform: (1) Ubuntu 16.04 OS + x86_64 CPU (2) Ubuntu OS + aarch64 CPU
 
 Republicate the fact:  
-(1) Install Pillow 5.2.0, numpy on both devices.  
+(1) Install Python3, Pillow 5.2.0, numpy on both devices.  
 (2) Run $ python TestPillow.py.  
 (3) Verify that the output on an x86_64 CPU is same as what I got in Output_x86_64.txt.  
 (4) Verify that the output on an aarch64 CPU is same as what I got in Output_aarch64.txt.  
 (5) Verify that the output on an x86_64 CPU is different from that on an aarch64 CPU.  
+
+# Snapshot of the checksum of the image on an x86_64 CPU
+CheckSum:  100837709  
+  Channel-wise CheckSum[0]:  47238115  
+  Channel-wise CheckSum[1]:  25964663  
+  Channel-wise CheckSum[2]:  27634931  
+
+# Snapshot of the checksum of the image on an aarch CPU
+CheckSum:  100836439  
+  Channel-wise CheckSum[0]:  47237972  
+  Channel-wise CheckSum[1]:  25964659  
+  Channel-wise CheckSum[2]:  27633808  
 
 # Personal analysis
 Note: This is a subjective debugging analysis that may mislead you and distract you from the root cause. Please read with caution.  
