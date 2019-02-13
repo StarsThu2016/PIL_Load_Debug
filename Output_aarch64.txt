@@ -1,0 +1,11 @@
+Python version:  3.5.2 (default, Nov 23 2017, 16:37:01) 
+[GCC 5.4.0 20160609]
+PIL version: 5.2.0
+numpy version: 1.14.5
+CPU architecture: b'Architecture:          aarch64\n'
+OS level data validation (md5sum): b'29706643d83f9bd99c07435f4c3e1e3f  lena.jpg\n'
+Image loaded. Data type: uint8 . Shape: (512, 512, 3)
+CheckSum:  100836439
+  Channel-wise CheckSum[0]:  47237972
+  Channel-wise CheckSum[1]:  25964659
+  Channel-wise CheckSum[2]:  27633808
