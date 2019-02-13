@@ -5,7 +5,11 @@ This repo demos a Pillow bug that I recently noticed. Briefly speaking, I found 
 Pillow version: 5.2.0  
 Platform: (1) Ubuntu 16.04 OS + x86_64 CPU (2) Ubuntu OS + aarch64 CPU
 
+<<<<<<< HEAD
 Republicate the fact:  
+=======
+Reproduce steps:  
+>>>>>>> e01b5670eba38c5d796044064652ab6b3a2ee838
 (1) Install Python3, Pillow 5.2.0, numpy on both devices.  
 (2) Run $ python TestPillow.py.  
 (3) Verify that the output on an x86_64 CPU is same as what I got in Output_x86_64.txt.  
@@ -18,7 +22,11 @@ CheckSum:  100837709
   Channel-wise CheckSum[1]:  25964663  
   Channel-wise CheckSum[2]:  27634931  
 
+<<<<<<< HEAD
 # Snapshot of the checksum of the image on an aarch CPU
+=======
+# Snapshot of the checksum of the image on an aarch64 CPU
+>>>>>>> e01b5670eba38c5d796044064652ab6b3a2ee838
 CheckSum:  100836439  
   Channel-wise CheckSum[0]:  47237972  
   Channel-wise CheckSum[1]:  25964659  
