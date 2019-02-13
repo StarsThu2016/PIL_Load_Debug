@@ -5,7 +5,7 @@ This repo demos a Pillow bug that I recently noticed. Briefly speaking, I found 
 Pillow version: 5.2.0  
 Platform: (1) Ubuntu 16.04 OS + x86_64 CPU (2) Ubuntu OS + aarch64 CPU
 
-Republicate the fact:  
+Reproduce steps:  
 (1) Install Python3, Pillow 5.2.0, numpy on both devices.  
 (2) Run $ python TestPillow.py.  
 (3) Verify that the output on an x86_64 CPU is same as what I got in Output_x86_64.txt.  
