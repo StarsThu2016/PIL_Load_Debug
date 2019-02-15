@@ -1,75 +1,69 @@
 # Pillow 5.2.0 reads the jpeg image differently between two devices
-
-This repo demos a Pillow bug that I recently noticed. Briefly speaking, I found the jpeg image is loaded differently between my two devices. To demo the difference, you may need a device with an x86_64 CPU and another device with an aarch64 CPU. 
-
+This repo demos a Pillow issue that I recently noticed. Briefly speaking, I found the jpeg image is loaded differently between my two devices.  
 Pillow version: 5.2.0  
-Platform: (1) Ubuntu 16.04 OS + x86_64 CPU (2) Ubuntu OS + aarch64 CPU
+Platform: Ubuntu 16.04 OS  
+By running "python TestPillow.py", one machine outputs as in "Output_aarch64.txt", and another machine outputs as in "Output_x86_64.txt"
 
-Reproduce steps:  
-(1) Install Python3, Pillow 5.2.0, numpy on both devices.  
-(2) Run $ python TestPillow.py.  
-(3) Verify that the output on an x86_64 CPU is same as what I got in Output_x86_64.txt.  
-(4) Verify that the output on an aarch64 CPU is same as what I got in Output_aarch64.txt.  
-(5) Verify that the output on an x86_64 CPU is different from that on an aarch64 CPU.  
-
-# Snapshot of the checksum of the image on an x86_64 CPU
-CheckSum:  100837709  
-  Channel-wise CheckSum[0]:  47238115  
-  Channel-wise CheckSum[1]:  25964663  
-  Channel-wise CheckSum[2]:  27634931  
-
-# Snapshot of the checksum of the image on an aarch64 CPU
+# Snapshot of the checksum of the image on machine 1
 CheckSum:  100836439  
   Channel-wise CheckSum[0]:  47237972  
   Channel-wise CheckSum[1]:  25964659  
   Channel-wise CheckSum[2]:  27633808  
 
-# Snapshot of the checksum of the image on an aarch64 CPU (libjpeg9, same as that in x86_64 device)
-('CheckSum: ', 100837709)  
-('  Channel-wise CheckSum[0]: ', 47238115)  
-('  Channel-wise CheckSum[1]: ', 25964663)  
-('  Channel-wise CheckSum[2]: ', 27634931)  
+# Snapshot of the checksum of the image on machine 2
+CheckSum:  100837709  
+  Channel-wise CheckSum[0]:  47238115  
+  Channel-wise CheckSum[1]:  25964663  
+  Channel-wise CheckSum[2]:  27634931  
 
-# Personal analysis
-Note: This is a subjective debugging analysis that may mislead you and distract you from the root cause. Please read with caution.  
+# Issue fixed
+The root cause of this issue is the inconsistency of libjpeg library that Pillow depends on. On machine 1, Pillow 5.2.0 is built with libjpeg 8, while on machine 2, Pillow 5.2.0 is built with libjpeg 9. To decode the jpeg image, Pillow calls dynamic linked library libjpeg in which it decodes differently from version 8 to version 9. This issue can be fixed by upgrading the libjpeg library in machine 1 to version 9 and reinstalling Pillow.  
 
-Hypothesis: The Pillow 5.2.0 library is executed differently between two devices mainly due to the different CPU architecture.  
+# Step-by-step solution
+Note: the solution is just for reference. The command on your machine may be different.  
 
-Evidence:  
-I use two consecutive git commits to compare how the source code of PIL library differs between two devices.  
-Commit 1 (earlier): The PIL directory on aarch64 machine.  
-Commit 2 (later): The PIL directory on x86_64 machine (replace in a delete-all-and-copy-all way).  
+* Uninstall libjpeg 8  
+Note: this step is neccessary for my machine because otherwise I cannot install libjpeg9-dev.  
+$ sudo apt-get purge libjpeg-turbo8-dev  
 
-I notice the change of commit 2 is as follows,  
-    A PIL/.libs/libfreetype-6ed94974.so.6.16.1  
-    A PIL/.libs/libjpeg-3fe7dfc0.so.9.3.0  
-    A PIL/.libs/liblcms2-a6801db4.so.2.0.8  
-    A PIL/.libs/liblzma-90de1f11.so.5.2.2  
-    A PIL/.libs/libopenjp2-e366d6b0.so.2.1.0  
-    A PIL/.libs/libpng16-8793a1b2.so.16.32.0  
-    A PIL/.libs/libtiff-8a6d997d.so.5.3.0  
-    A PIL/.libs/libwebp-8ccd29fd.so.7.0.2  
-    A PIL/.libs/libwebpdemux-eba3dc32.so.2.0.4  
-    A PIL/.libs/libwebpmux-1c63fe99.so.3.0.2  
-    A PIL/.libs/libz-a147dcb0.so.1.2.3  
-    R PIL/_imaging.cpython-35m-aarch64-linux-gnu.so  
-    A PIL/_imaging.cpython-35m-x86_64-linux-gnu.so  
-    A PIL/_imagingcms.cpython-35m-x86_64-linux-gnu.so  
-    R PIL/_imagingft.cpython-35m-aarch64-linux-gnu.so  
-    A PIL/_imagingft.cpython-35m-x86_64-linux-gnu.so  
-    R PIL/_imagingmath.cpython-35m-aarch64-linux-gnu.so  
-    A PIL/_imagingmath.cpython-35m-x86_64-linux-gnu.so  
-    R PIL/_imagingmorph.cpython-35m-aarch64-linux-gnu.so  
-    A PIL/_imagingmorph.cpython-35m-x86_64-linux-gnu.so  
-    R PIL/_imagingtk.cpython-35m-aarch64-linux-gnu.so  
-    A PIL/_imagingtk.cpython-35m-x86_64-linux-gnu.so  
-    A PIL/_webp.cpython-35m-x86_64-linux-gnu.so  
+* Install libjpeg 9  
+$ sudo apt-get install libjpeg9-dev  
 
-From aarch64 directory to x86_64 directory, we see 3 types of changes,  
-(1) "_imaging*.cpython-35m-aarch64-linux-gnu.so" is replaced with "_imaging*.cpython-35m-x86_64-linux-gnu.so".  
-(2) a subdirectory ".lib/" is added.  
-(3) "_imagingcms.cpython-35m-x86_64-linux-gnu.so" and "PIL/_webp.cpython-35m-x86_64-linux-gnu.so" are added.  
+* Uninstall Pillow (optional)  
+Note: depending on how Pillow is installed, the command may be different.  
+$ pip uninstall Pillow   
+$ sudo pip uninstall Pillow  
 
-For (1), this might be the root cause since the dynamic libraries are changed to the x86_64 version and these dynamic libraries may be implemented differently.   
-For (2), this may because the installation process of Pillow library. For example, on the aarch64 machine, these libs are already installed somewhere else and linked correctly by the OS and thus no local .lib/ is needed. However, on the x86_64 machine, these libs are not installed and thus Pillow place these libs locally inside its directory when Pillow is installed.  
-For (3), I have no idea.
+* Reinstall Pillow as system-wide package  
+Note: you may also install as user's package without "sudo", but "--no-cache-dir" option is a must according to "If Pillow has been previously built without the required prerequisites, it may be necessary to manually clear the pip cache or build without cache using the --no-cache-dir option to force a build with newly installed external libraries." in https://pillow.readthedocs.io/en/stable/installation.html  
+$ sudo pip install --no-cache-dir Pillow==5.2.0  
+
+# Useful debugging commands
+* Check all jpeg libraries installed on the machine  
+$ dpkg -l | grep -In libjpeg  
+
+* Check the linked .so files of libjpeg library  
+$ ldconfig -p | grep -In libjpeg   
+
+* Further check the .so files in the file system to make sure the default libjpeg.so is linked to libjpeg.so.9.2.0  
+$ ls -lh /usr/lib/*/libjpeg*  
+
+* Check the python version  
+$ python -V  
+
+* Check the Pillow version  
+$ python -c "import PIL; print(PIL.__version__)"  
+
+* Check where Pillow installs  
+$ python -c "import PIL; print(PIL.__file__)"  
+
+* Check the libjpeg version that Pillow uses  
+$ python -c "from PIL import Image; print(Image.core.jpeglib_version)"  
+
+# Snapshot of the checksum of the image on machine 1 after the issue is fixed (libjpeg 9, same as that on machine 2, Output_aarch64_libjpeg9.txt)
+CheckSum:  100837709  
+  Channel-wise CheckSum[0]:  47238115  
+  Channel-wise CheckSum[1]:  25964663  
+  Channel-wise CheckSum[2]:  27634931  
+
+
