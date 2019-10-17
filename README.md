@@ -63,9 +63,12 @@ $ python -c "from PIL import Image; print(Image.core.jpeglib_version)"
 # Python and pip basics
 pip/pip3 are python package management tools, however they can only see some directories. For example,  
 (1) /home/nvidia/c4aarch64_installer/envs/tf114/lib/python3.5/site-packages  
-(2) /home/nvidia/.local/lib/python2.7/site-packages  
-(3) /usr/local/lib/python3.5/dist-packages  
-(1) is installed in virtual environment, (2) is install by ```pip install --user```, (3) is installed by ```sudo pip install```. ```/usr/local/bin/pip```(system-wide pip) can not see local packages in ```/home/nvidia/.local/lib/python2.7/site-packages```.
+(2) /home/nvidia/c4aarch64_installer/lib/python3.7/site-packages/  
+(3) /home/nvidia/.local/lib/python2.7/site-packages  
+(4) /usr/local/lib/python3.5/dist-packages  
+(1) is installed in speciallized virtual environment, (2) is installed in base virtual environment, (3) is install by ```pip install --user```, (4) is installed by ```sudo pip install```.  
+Thus, ```/usr/local/bin/pip```(system-wide pip) can not see local packages in ```/home/nvidia/.local/lib/python2.7/site-packages```.  
+Thus, python in base virtual environment (```/home/nvidia/c4aarch64_installer/bin/python```) cannot see python packages in speciallized virtual environment (```/home/nvidia/c4aarch64_installer/envs/tf114/lib/python3.5/site-packages/PIL```).  
 
 ## Make sure which pip/pip3 we are using
 ```
