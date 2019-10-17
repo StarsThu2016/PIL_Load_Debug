@@ -60,6 +60,36 @@ $ python -c "import PIL; print(PIL.\_\_file\_\_)"
 * Check the libjpeg version that Pillow uses  
 $ python -c "from PIL import Image; print(Image.core.jpeglib_version)"  
 
+# Python and pip basics
+pip/pip3 are python package management tools, however they can only see some directories. For example,  
+(1) /home/nvidia/c4aarch64_installer/envs/tf114/lib/python3.5/site-packages  
+(2) /home/nvidia/.local/lib/python2.7/site-packages  
+(3) /usr/local/lib/python3.5/dist-packages  
+(1) is installed in virtual environment, (2) is install by ```pip install --user```, (3) is installed by ```sudo pip install```. ```/usr/local/bin/pip```(system-wide pip) can not see local packages in ```/home/nvidia/.local/lib/python2.7/site-packages```.
+
+## Make sure which pip/pip3 we are using
+```
+which pip
+which pip3
+sudo which pip
+sudo which pip3
+```
+
+## Make sure which python we are using
+```
+python -V
+```
+
+## Make sure which python package we import
+```
+python -c "import PIL; print(PIL.__file__)"  
+```
+
+## Make sure which jpeg lib the python package links
+```
+python -c "from PIL import Image; print(Image.core.jpeglib_version)" 
+```
+
 # Snapshot of the checksum of the image on machine 1 after the issue is fixed (libjpeg 9, same as that on machine 2, Output_aarch64_libjpeg9.txt)
 CheckSum:  100837709  
   Channel-wise CheckSum[0]:  47238115  
